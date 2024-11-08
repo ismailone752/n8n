@@ -9,6 +9,7 @@ import {
 	testDefinitionCreateRequestBodySchema,
 	testDefinitionPatchRequestBodySchema,
 } from '@/evaluation/test-definition.schema';
+import { TestRunnerService } from '@/evaluation/test-runner/test-runner.service.ee';
 import { listQueryMiddleware } from '@/middlewares';
 import { getSharedWorkflowIds } from '@/public-api/v1/handlers/workflows/workflows.service';
 import { isPositiveInteger } from '@/utils';
@@ -26,7 +27,10 @@ export class TestDefinitionsController {
 		return Number(id);
 	}
 
-	constructor(private readonly testDefinitionService: TestDefinitionService) {}
+	constructor(
+		private readonly testDefinitionService: TestDefinitionService,
+		private readonly testRunnerService: TestRunnerService,
+	) {}
 
 	@Get('/', { middlewares: listQueryMiddleware })
 	async getMany(req: TestDefinitionsRequest.GetMany) {
@@ -134,5 +138,17 @@ export class TestDefinitionsController {
 		assert(testDefinition, 'Test definition not found');
 
 		return testDefinition;
+	}
+
+	@Post('/:id/run')
+	async runTest(req: TestDefinitionsRequest.Run) {
+		if (!isPositiveInteger(req.params.id)) {
+			throw new BadRequestError('Test ID is not a number');
+		}
+
+		const workflowIds = await getSharedWorkflowIds(req.user, ['workflow:read']);
+
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-return
+		return await this.testRunnerService.runTest(req.user, Number(req.params.id), workflowIds);
 	}
 }
