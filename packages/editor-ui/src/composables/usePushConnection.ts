@@ -499,6 +499,8 @@ export function usePushConnection({ router }: { router: ReturnType<typeof useRou
 				runDataExecutedStartData: runDataExecuted.data.startData,
 				resultDataError: runDataExecuted.data.resultData.error,
 			});
+		} else if (receivedData.type === 'executionWaiting') {
+			// TODO: Do something here
 		} else if (receivedData.type === 'executionStarted') {
 			const pushData = receivedData.data;
 

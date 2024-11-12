@@ -12,6 +12,15 @@ type ExecutionStarted = {
 	};
 };
 
+type ExecutionWaiting = {
+	type: 'executionWaiting';
+	data: {
+		executionId: string;
+		data: IRun;
+		retryOf?: string;
+	};
+};
+
 type ExecutionFinished = {
 	type: 'executionFinished';
 	data: {
@@ -47,6 +56,7 @@ type NodeExecuteAfter = {
 
 export type ExecutionPushMessage =
 	| ExecutionStarted
+	| ExecutionWaiting
 	| ExecutionFinished
 	| ExecutionRecovered
 	| NodeExecuteBefore

@@ -347,9 +347,11 @@ function hookFunctionsPush(): IWorkflowExecuteHooks {
 					executionId,
 					workflowId,
 				});
-				// TODO: Look at this again
+
+				const pushType =
+					fullRunData.status === 'waiting' ? 'executionWaiting' : 'executionFinished';
 				pushInstance.send(
-					'executionFinished',
+					pushType,
 					{
 						executionId,
 						data: pushRunData,
