@@ -1,7 +1,7 @@
 ARG NODE_VERSION=20
 FROM n8nio/base:${NODE_VERSION}
 
-ARG N8N_VERSION
+ARG N8N_VERSION=1.52.0
 RUN if [ -z "$N8N_VERSION" ] ; then echo "The N8N_VERSION argument is missing!" ; exit 1; fi
 
 LABEL org.opencontainers.image.title="n8n"
@@ -28,9 +28,6 @@ ARG LAUNCHER_VERSION=0.1.1
 ENV N8N_RUNNERS_MODE=internal_launcher \
     N8N_RUNNERS_LAUNCHER_PATH=/usr/local/bin/task-runner-launcher
 COPY n8n-task-runners.json /etc/n8n-task-runners.json
-# First, download, verify, then extract the launcher binary
-# Second, chmod with 4555 to allow the use of setuid
-# Third, create a new user and group to execute the Task Runners under
 RUN \
 	if [[ "$TARGETPLATFORM" = "linux/amd64" ]]; then export ARCH_NAME="x86_64"; \
 	elif [[ "$TARGETPLATFORM" = "linux/arm64" ]]; then export ARCH_NAME="aarch64"; fi; \
